@@ -31,6 +31,8 @@ VarSpeedServo bounce_right;
 AD_Keyboard ad_keyboard;
 
 void setup() {
+  Serial.begin(9600);
+
   arm_left.attach(PIN_ARM_LEFT);
   bounce_left.attach(PIN_BOUNCE_LEFT);
   arm_right.attach(PIN_ARM_RIGHT);
@@ -43,21 +45,17 @@ void loop() {
   current_key = ad_keyboard.get_key(PIN_AD_KEYBOARD);
 
   if (current_key != last_key) {
-    delay(50);  // Debounce
-    current_key = ad_keyboard.get_key(PIN_AD_KEYBOARD);
-    if (current_key != last_key) {
-      last_key = current_key;
-      handle_key_press(current_key);
-    }
+    last_key = current_key;
+    handle_key_press(current_key);
+    command = current_key * 10 + control_mode;
   }
 
-  command = current_key * 10 + control_mode;
   handle_command(command);
 }
 
 void handle_key_press(int key) {
-  if (key == 5) {  // Action
-    control_mode = 1 - control_mode;  // 0 - Direct Mode, 1 - Gesture Mode
+  if (key == 5) { // Action
+    control_mode = 1 - control_mode; // 0 - Direct Mode, 1 - Gesture Mode
     perform_motion(control_mode == 0 ? 100 : 0, control_mode == 0 ? 0 : 100, 50, 50, 5, 250);
   }
 }
@@ -67,33 +65,37 @@ void handle_command(int command) {
     case 0:
       perform_default_motion();
       break;
-    case 10:  // Left
+    case 10: // Left
       perform_motion(50, 0, 25, 75, 3, 0);
       break;
-    case 20:  // Up
+    case 20: // Up
       perform_motion(75, 75, 100, 100, 4, 0);
       break;
-    case 30:  // Down
+    case 30: // Down
       perform_motion(25, 25, 0, 0, 4, 0);
       break;
-    case 40:  // Right
+    case 40: // Right
       perform_motion(0, 50, 75, 25, 3, 0);
       break;
 
     case 1:
       perform_default_motion();
       break;
-    case 11:  // Left
+    case 11: // Left
       perform_wave_motion();
       break;
-    case 21:  // Up
+    case 21: // Up
       perform_bounce_motion();
       break;
-    case 31:  // Down
+    case 31: // Down
       perform_vibe_motion();
       break;
-    case 41:  // Right
+    case 41: // Right
       perform_dance_motion();
+      break;
+    
+    default:
+      perform_default_motion();
       break;
   }
 }

@@ -43,38 +43,34 @@ void loop() {
   current_key = matrix_keyboard.get_key(PIN_MATRIX_KEYBOARD);
 
   if (current_key != last_key) {
-    delay(50);  // Debounce
-    current_key = matrix_keyboard.get_key(PIN_MATRIX_KEYBOARD);
-    if (current_key != last_key) {
       last_key = current_key;
       handle_key_press(current_key);
-    }
+      command = current_key * 10 + control_mode;
   }
 
-  command = current_key * 10 + control_mode;
   handle_command(command);
 }
 
 void handle_key_press(int key) {
   switch (key) {
-    case 13:  // A
+    case 13: // A
       if (control_mode != 0) {
-        control_mode = 0;  // Direct Mode
+        control_mode = 0; // Direct Mode
       }
       perform_motion(100, 0, 50, 50, 5, 250);
       break;
-    case 14:  // B
+    case 14: // B
       if (control_mode != 1) {
-        control_mode = 1;  // Gesture Mode
+        control_mode = 1; // Gesture Mode
       }
       perform_motion(0, 100, 50, 50, 5, 250);
       break;
-    case 15:  // C
+    case 15: // C
       if (control_mode != 2) {
         control_mode = 2;
       }
       break;
-    case 16:  // D
+    case 16: // D
       if (control_mode != 3) {
         control_mode = 3;
       }
@@ -87,32 +83,32 @@ void handle_command(int command) {
     case 0:
       perform_default_motion();
       break;
-    case 20:  // 2 - Up
+    case 20: // 2 - Up
       perform_motion(75, 75, 100, 100, 4, 0);
       break;
-    case 40:  // 4 - Left
+    case 40: // 4 - Left
       perform_motion(50, 0, 25, 75, 3, 0);
       break;
-    case 60:  // 6 - Right
+    case 60: // 6 - Right
       perform_motion(0, 50, 75, 25, 3, 0);
       break;
-    case 80:  // 8 - Down
+    case 80: // 8 - Down
       perform_motion(25, 25, 0, 0, 4, 0);
       break;
 
     case 1:
       pperform_default_motion();
       break;
-    case 11:  // 1
+    case 11: // 1
       perform_wave_motion();
       break;
-    case 21:  // 2
+    case 21: // 2
       perform_bounce_motion();
       break;
-    case 31:  // 3
+    case 31: // 3
       perform_vibe_motion();
       break;
-    case 41:  // 4
+    case 41: // 4
       perform_dance_motion();
       break;
 

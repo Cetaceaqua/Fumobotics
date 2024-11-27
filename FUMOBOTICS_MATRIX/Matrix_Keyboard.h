@@ -2,10 +2,6 @@
 	
 	Matrix_Keyboard.h
 	
-	Nologo Tech 4 × 4 Matrix Keyboard Module
-	
-	Link - https://www.nologo.tech/product/electronicmodule/4_4MatrixKeyboardModule.html
-	
 	@Cetaceaqua
 	
 */
@@ -32,8 +28,7 @@ int Matrix_Keyboard::get_key(uint8_t pin) {
   int adc_value = analogRead(pin);
   for (int i = 0; i < num_keys; i++) {
     if (adc_value > adc_key_min_values[i] && adc_value < adc_key_max_values[i]) {
-      return i + 1;
-      // 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+      return i + 1; // 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
     }
   }
   return 0;
