@@ -31,8 +31,6 @@ VarSpeedServo bounce_right;
 AD_Keyboard ad_keyboard;
 
 void setup() {
-  Serial.begin(9600);
-
   arm_left.attach(PIN_ARM_LEFT);
   bounce_left.attach(PIN_BOUNCE_LEFT);
   arm_right.attach(PIN_ARM_RIGHT);
@@ -45,9 +43,13 @@ void loop() {
   current_key = ad_keyboard.get_key(PIN_AD_KEYBOARD);
 
   if (current_key != last_key) {
-    last_key = current_key;
-    handle_key_press(current_key);
-    command = current_key * 10 + control_mode;
+    delay(50); // Debounce
+    current_key = matrix_keyboard.get_key(PIN_MATRIX_KEYBOARD);
+    if (current_key != last_key) {
+      last_key = current_key;
+      handle_key_press(current_key);
+      command = current_key * 10 + control_mode;
+    }
   }
 
   handle_command(command);
@@ -55,7 +57,7 @@ void loop() {
 
 void handle_key_press(int key) {
   if (key == 5) { // Action
-    control_mode = 1 - control_mode; // 0 - Direct Mode, 1 - Gesture Mode
+    control_mode = 1 - control_mode; // 0: Direct Mode, 1: Gesture Mode
     perform_motion(control_mode == 0 ? 100 : 0, control_mode == 0 ? 0 : 100, 50, 50, 5, 250);
   }
 }

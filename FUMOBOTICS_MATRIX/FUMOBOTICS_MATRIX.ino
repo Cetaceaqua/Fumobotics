@@ -6,6 +6,8 @@
   @Javi_Lacking
   @Cetaceaqua
 
+  TODO: Design a case for the module and re-adjust debounce.
+
 */
 
 #include <VarSpeedServo.h>
@@ -16,7 +18,7 @@
 #define PIN_ARM_RIGHT 6
 #define PIN_BOUNCE_RIGHT 9
 
-#define PIN_MATRIX_KEYBOARD A0
+#define PIN_MATRIX_KEYBOARD A1
 
 int current_key = -1;
 int last_key = -1;
@@ -31,6 +33,8 @@ VarSpeedServo bounce_right;
 Matrix_Keyboard matrix_keyboard;
 
 void setup() {
+  Serial.begin(9600);
+
   arm_left.attach(PIN_ARM_LEFT);
   bounce_left.attach(PIN_BOUNCE_LEFT);
   arm_right.attach(PIN_ARM_RIGHT);
@@ -43,9 +47,13 @@ void loop() {
   current_key = matrix_keyboard.get_key(PIN_MATRIX_KEYBOARD);
 
   if (current_key != last_key) {
-      last_key = current_key;
-      handle_key_press(current_key);
-      command = current_key * 10 + control_mode;
+      delay(50); // Debounce
+      current_key = matrix_keyboard.get_key(PIN_MATRIX_KEYBOARD);
+      if (current_key != last_key) {
+        last_key = current_key;
+        handle_key_press(current_key);
+        command = current_key * 10 + control_mode;
+      }
   }
 
   handle_command(command);
@@ -56,23 +64,13 @@ void handle_key_press(int key) {
     case 13: // A
       if (control_mode != 0) {
         control_mode = 0; // Direct Mode
+        perform_motion(100, 0, 50, 50, 5, 250);
       }
-      perform_motion(100, 0, 50, 50, 5, 250);
       break;
     case 14: // B
       if (control_mode != 1) {
         control_mode = 1; // Gesture Mode
-      }
-      perform_motion(0, 100, 50, 50, 5, 250);
-      break;
-    case 15: // C
-      if (control_mode != 2) {
-        control_mode = 2;
-      }
-      break;
-    case 16: // D
-      if (control_mode != 3) {
-        control_mode = 3;
+        perform_motion(0, 100, 50, 50, 5, 250);
       }
       break;
   }
@@ -97,7 +95,7 @@ void handle_command(int command) {
       break;
 
     case 1:
-      pperform_default_motion();
+      perform_default_motion();
       break;
     case 11: // 1
       perform_wave_motion();
@@ -110,14 +108,6 @@ void handle_command(int command) {
       break;
     case 41: // 4
       perform_dance_motion();
-      break;
-
-    case 2:
-      perform_default_motion();
-      break;
-
-    case 3:
-      perform_default_motion();
       break;
 
     default:
